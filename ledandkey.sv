@@ -1,10 +1,11 @@
 /*
- * Author: Bill Siever <bsiever@gmail.com> 
- * See: https://github.com/digital-logic-and-computer-design/ice40-ledandkey 
+ * Author: Bill Siever <bsiever@gmail.com>
+ * See: https://github.com/digital-logic-and-computer-design/ice40-ledandkey
  */
 
 module ledandkey
-#(parameter CLICK_DIV_X2 = 16)  // Clock Divider
+#(parameter CLICK_DIV_X2 = 16, // Clock Divider
+            BRIGHTNESS = 5)    // Brightness level: 0-7 (3 bits)
 (
     input logic clock,     // Master Clock
     input logic reset,     // Master reset
@@ -89,7 +90,7 @@ module ledandkey
 
     // Driving state machine / states
     typedef enum bit[3:0] {
-        Reset_Idle,              // 0
+        Reset_Idle,              //0
         Turn_On_Start,           //1
         Turn_On_End,             //2
         Auto_Increment_Start,    //3
@@ -157,10 +158,11 @@ module ledandkey
                             // Move on to a data-send state
                             state <= Turn_On_Start;
                     end
+
                     Turn_On_Start: begin
                         tm_strobe <= 0;
                         dio_write_nread <= 1;
-                        current_data <= 8'h8f;  // Turn on display
+                        current_data <= 8'h88|BRIGHTNESS;  // Turn on display and set brightness
                         bp_start <= 1;
                         state <= Turn_On_End;
                     end
